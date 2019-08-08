@@ -9,7 +9,7 @@ library(e1071)
 library(DMwR)
 library(Epi)
 library(arules)
-data<-read.csv("C:/Users/user/Downloads/²Î­p¿Ô¸ß/titanic.csv",header=T)
+data<-read.csv("C:/Users/user/Downloads/çµ±è¨ˆè«®è©¢/titanic.csv",header=T)
 a<-0
 for(i in 1:1309){if(data[i,1]==1&data[i,2]==1){a<-a+1}}
 b<-0
@@ -22,7 +22,7 @@ ggplot(data=dat,aes(x=pclass,y=freq,fill=status))+
   geom_text(aes(label=freq),vjust=1.6,color="black",position =
               position_dodge(0.9), size=3.5)+
   theme(plot.title = element_text(hjust = 0.5,size=20))+
-  labs(title="¦U²î¿µ¥Í¦s±¡ªp ")
+  labs(title="å„èˆ¹è‰™ç”Ÿå­˜æƒ…æ³ ")
 ggplot(data=data,aes(x=survived,y=fare,fill=as.factor(survived)))+
   geom_boxplot(alpha = 0.5, show.legend = FALSE)+
   geom_jitter(position=position_jitter(width=0.3, height=0.2),aes(colour=as.factor(survived)), alpha=0.9)+
@@ -33,48 +33,32 @@ ggplot(data=data,aes(x=survived,y=age,fill=as.factor(survived)))+
   geom_jitter(position=position_jitter(width=0.3, height=0.2),aes(colour=as.factor(survived)), alpha=0.9)+
   theme(plot.title = element_text(hjust = 0.5,size=20))+
   labs(title="Boxplot of survived vs age", colour="survived",fill="survived")
-####################################################
-location<-data.frame(locat=c("queenstown","cherbourg","southampton","Titanic"),lon=c(-8.29,-1.668305,-1.4705326,-49.945839),lat=c(51.85,49.6415363,50.913908,41.732128))
-df<-data.frame(lon=location$lon,lat=location$lat)
-map <- get_googlemap(center=c(lon=mean(df$lon)-10,lat=mean(df$lat)),language = "zh-TW", zoom =4, markers = df, scale = 2,maptype="roadmap")
-ggmap(map)+geom_text(label="queenstown",x=-8.29,y=51.85,size=6)+geom_text(label="cherbourg",x=-1.668305,y=49.6415363,size=6)+geom_text(label="southampton",x=-1.4705326,y=50.913908,size=6)+geom_text(label="Titanic",x=-49.945839,y=41.732128,size=6)
-###########################################################################
-grep("Jack|Rose",data$name,value=TRUE)
-data1<-NA
-for(i in 1:1309){if(data[i,2]==0){data1<-rbind(data1,data[i,])}}
-data1<-data1[-1,]
-name <- as.character(data1$name)
-title <- sapply(name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][3]})
-which.max(table(title))
-table(title)[332]
-################################################
-data <- knnImputation(data[,-c(12:14)])
+##############éºæ¼å€¼è™•ç†######################
+data <- knnImputation(data[,-c(12:14)]) (k defaults to 10)
 data$pclass<-as.factor(data$pclass)
 data$survived<-as.factor(data$survived)
-levels(data$embarked)[1]<-"S"#¦]¤j³¡¤À­¼«È³£¬O¦bsouthampton¤W²î
+levels(data$embarked)[1]<-"S"#å› å¤§éƒ¨åˆ†ä¹˜å®¢éƒ½æ˜¯åœ¨southamptonä¸Šèˆ¹
 fit<-glm(survived~pclass+sex+age+sibsp,data,family=binomial)
 ########################################################################
 set.seed(30)
-n<-round(0.2*nrow(data))
+n<-round(0.2*nrow(data)) 
 test<-sample(1:nrow(data),n)
 train<-data[-test,]
-test<-data[test,]
+test<-data[test,] #80% for training set,20% for test set
 tree<-rpart(survived~pclass+sex+age+sibsp+parch+fare+embarked,data=train,method="class")
-rattle::fancyRpartPlot(tree)
+rattle::fancyRpartPlot(tree) #visualize tree
 predict.train<-predict(tree,train,type="class")
-table(real=train$survived,predict=predict.train)####·Ç½T²v¬ù0.84
+table(real=train$survived,predict=predict.train)####Accuracy is about 0.84
 predict.test<-predict(tree,test,type="class")
-mat<-table(real=test$survived,predict=predict.test)#####·Ç½T²v¬ù0.76
+mat<-table(real=test$survived,predict=predict.test)#####Accuracy is about 0.76
 numFolds = trainControl( method = "cv", number = 10)
 cpGrid = expand.grid( .cp = seq(0.002,0.1,0.002))  
 cv1<-train(as.factor(survived)~pclass+sex+age+sibsp+parch+fare+embarked,data=train,method="rpart",trControl = numFolds, tuneGrid = cpGrid )
-new_tree = rpart(survived~pclass+sex+age+sibsp+parch+fare+embarked,data=train, method='class', cp=0.014)
+new_tree = rpart(survived~pclass+sex+age+sibsp+parch+fare+embarked,data=train, method='class', cp=0.014) #prune the tree
 predict.test1<-predict(new_tree,test,type="class")
-mat1<-table(real=test$survived,predict=predict.test1)#######·Ç½T²v¬ù0.78
-rattle::fancyRpartPlot(new_tree)
+mat1<-table(real=test$survived,predict=predict.test1)#######Accuracy is about 0.78
+rattle::fancyRpartPlot(new_tree)#visualize tree
 ######################################################
-set.seed(30)
-data <- knnImputation(data[,-c(12:14)])
 new_data<-data
 for(i in 1:1309){if(new_data[i,5]<3 && new_data[i,5]>=0){new_data[i,5]<-0}
   else if(new_data[i,5]>=3 && new_data[i,5]<12){new_data[i,5]<-1}
