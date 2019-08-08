@@ -1,0 +1,9 @@
+lhs                       rhs          support   confidence lift     count
+[1] {pclass=3,sex=male}    => {survived=0} 0.3193277 0.8478702  1.371894 418  
+[2] {sex=male,age=adult}   => {survived=0} 0.2513369 0.8266332  1.337531 329  
+[3] {sex=male,age=young}   => {survived=0} 0.1810542 0.8315789  1.345534 237  
+[4] {pclass=3,age=adult}   => {survived=0} 0.1695951 0.7928571  1.282880 222  
+[5] {pclass=3,age=young}   => {survived=0} 0.1688312 0.7366667  1.191961 221  
+[6] {sex=female,age=adult} => {survived=1} 0.1122995 0.7696335  2.014901 147  
+[7] {pclass=2,sex=male}    => {survived=0} 0.1115355 0.8538012  1.381490 146  
+[8] {pclass=1,sex=female}  => {survived=1} 0.1061879 0.9652778  2.527097 139 
